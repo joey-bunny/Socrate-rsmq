@@ -9,13 +9,13 @@ export function generateName () {
   const name = `${firstName} ${lastName}`
   const email = `${firstName}@${lastName}.com`
   const password = 'secret'
-  const isLecturer = true
+  const userRole = 'admin'
 
   const payload = {
     name,
     email,
     password,
-    isLecturer
+    userRole
   }
 
   return payload

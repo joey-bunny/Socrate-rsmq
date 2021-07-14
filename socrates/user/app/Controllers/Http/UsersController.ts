@@ -117,13 +117,14 @@ export default class UsersController {
   /*
   ** DELETE A USER
   */
-  public async destroy({response, params }: HttpContextContract) {
+  public async destroy({request, response, params }: HttpContextContract) {
     // Request required data
-    const userId = params.id
+    const id = params.id
+    const { userRole } = request.body()
 
     try {
       // Find user in database
-      const findUser = await User.findBy('id', userId)
+      const findUser = await User.findBy('id', id)
 
       // Return error reponse if user is not found
       if(!findUser) return response.status(400).send({
@@ -131,9 +132,9 @@ export default class UsersController {
         message: 'User not found'
       })
 
-      if (findUser.id != userId) return response.status(403).send({
+      if (userRole != 'admin') return response.status(403).send({
         statusCode: 403,
-        message: 'Unauthorized to delete this user'
+        message: 'Only admins are authorized to delete user'
       })
 
       // Delete user

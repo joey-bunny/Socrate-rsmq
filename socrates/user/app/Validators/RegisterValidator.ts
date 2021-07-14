@@ -31,7 +31,7 @@ export default class RegisterValidator {
 			rules.unique({ table: 'users', column: 'email'}),
 		]),
 		password: schema.string({ trim: true }),
-		isLecturer: schema.boolean()
+		userRole: schema.enum(['admin', 'lecturer', 'student'])
   })
 
 	/**

@@ -26,7 +26,7 @@ Route.get('/', async () => {
 
 Route.group(() => {
   Route.post('/', 'CoursesController.create')// CREATE COURSE ROUTE
-  Route.get('/:name', 'CoursesController.findCourse')// FIND A COURSE ROUTE
-  Route.put('/:name', 'CoursesController.update')// FIND A COURSE ROUTE
-  Route.delete('/:name', 'CoursesController.destroy')// DELETE A COURSE ROUTE
+  Route.get('/:id', 'CoursesController.findCourse')// FIND A COURSE ROUTE
+  Route.put('/:id', 'CoursesController.update')// FIND A COURSE ROUTE
+  Route.delete('/:id', 'CoursesController.destroy')// DELETE A COURSE ROUTE
 })

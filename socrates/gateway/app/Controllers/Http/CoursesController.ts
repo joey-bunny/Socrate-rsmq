@@ -10,13 +10,14 @@ export default class CoursesController {
   public async create({request, response}: HttpContextContract) {
     const  { name, description } = request.body()
     const user = request.user
-    const userRole = user['is_lecturer']
+    const userRole = user['user_role']
     const userId = user['id']
     const payload = lower({name, description, userId})
+    console.log('admin',userRole)
 
-    if (userRole !== 1) return response.status(403).send({
+    if (userRole == 'student') return response.status(403).send({
       statusCode: 403,
-      message: 'Account type is unauthorized to create course'
+      message: 'Only admins and lecturers are authorized to create course'
     })
 
     try {
@@ -36,12 +37,12 @@ export default class CoursesController {
   }
 
   /*
-  **FIND A COURSE ROUTE
+  **FETCH A COURSE ROUTE
   */
   public async findCourse({ response, params }: HttpContextContract) {
     // Requet required data
-    const name = params.name
-    const getCourseRoute = `${courseServiceRoute}/${name}`
+    const id = params.id
+    const getCourseRoute = `${courseServiceRoute}/${id}`
 
     try {
       // Send api request to user service to find user using id
@@ -66,10 +67,16 @@ export default class CoursesController {
     // Return required data
     const user = request.user
     const userId = user['id']
-    const name = params.name
+    const userRole = user['user_role']
+    const id = params.id
     const { newName, newDescription } = request.body()
-    const payload = lower({newName, newDescription, userId})
-    const getCourseRoute = `${courseServiceRoute}/${name}`
+    const payload = lower({newName, newDescription, userId, userRole})
+    const getCourseRoute = `${courseServiceRoute}/${id}`
+
+    if (userRole == 'student') return response.status(403).send({
+      statusCode: 403,
+      message: 'Only admins and lecturers are authorized to edit course'
+    })
 
     try {
       // Send api request to user service to find user using id
@@ -92,11 +99,17 @@ export default class CoursesController {
   */
   public async destroy({request, response, params}: HttpContextContract) {
     // Request required data
-    const name = params.name
+    const id = params.id
     const user = request.user
     const userId = user['id']
-    const getCourseRoute = `${courseServiceRoute}/${name}`
-    const payload = { userId }
+    const userRole = user['user_role']
+    const getCourseRoute = `${courseServiceRoute}/${id}`
+    const payload = { userId, userRole }
+    
+    if (userRole == 'student') return response.status(403).send({
+      statusCode: 403,
+      message: 'Only admins and lecturers are authorized to delete course'
+    })
 
     try {
       // Send api request to user service to find user using id

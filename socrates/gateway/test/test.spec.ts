@@ -11,7 +11,7 @@ let token
 let userId
 let email
 let password
-let courseName
+let courseId
 let courseDescription
 
 test.group('Welcome', () => {
@@ -72,7 +72,7 @@ test.group('Welcome', () => {
     const payload = generateCourse();
     const text = await supertest(baseCourseRoute).post('/').set('authorization', `Bearer ${token}`).send(payload).expect(201)
 
-    courseName = text.body.data.name
+    courseId = text.body.data.id
     courseDescription = text.body.data.description
     
 
@@ -85,7 +85,7 @@ test.group('Welcome', () => {
     /**
      * Make request
      */
-    const text = await supertest(baseCourseRoute).get(`/${courseName}`).set('authorization', `Bearer ${token}`).expect(200)
+    const text = await supertest(baseCourseRoute).get(`/${courseId}`).set('authorization', `Bearer ${token}`).expect(200)
 
     assert.exists(text)
     assert.equal(text.body.message, 'Course found')
@@ -96,7 +96,7 @@ test.group('Welcome', () => {
     /**
      * Make request
      */
-    const text = await supertest(baseCourseRoute).put(`/${courseName}`).send({
+    const text = await supertest(baseCourseRoute).put(`/${courseId}`).send({
       'newDescription': courseDescription
     }).set('authorization', `Bearer ${token}`).expect(200)
 
@@ -109,7 +109,7 @@ test.group('Welcome', () => {
     /**
      * Make request
      */
-    const text = await supertest(baseCourseRoute).delete(`/${courseName}`).set('authorization', `Bearer ${token}`).expect(200)
+    const text = await supertest(baseCourseRoute).delete(`/${courseId}`).set('authorization', `Bearer ${token}`).expect(200)
 
     assert.exists(text)
     assert.equal(text.body.message, 'Course deleted')
@@ -119,7 +119,7 @@ test.group('Welcome', () => {
     /**
      * Make request
      */
-    const text = await supertest(baseUserRoute).delete(`/`).set('authorization', `Bearer ${token}`).expect(200)
+    const text = await supertest(baseUserRoute).delete(`/${userId}`).set('authorization', `Bearer ${token}`).expect(200)
 
     assert.exists(text)
     assert.equal(text.body.message, 'User deleted')

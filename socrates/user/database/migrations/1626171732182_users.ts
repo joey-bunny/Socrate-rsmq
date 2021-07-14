@@ -9,7 +9,7 @@ export default class Users extends BaseSchema {
       table.string('name').notNullable()
       table.string('email').notNullable()
       table.string('password').notNullable()
-      table.boolean('is_lecturer').notNullable()
+      table.string('user_role').notNullable()
       table.timestamps(true, true)
     })
   }

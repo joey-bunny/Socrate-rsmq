@@ -32,7 +32,7 @@ Route.get('/courses', async ({ response}: HttpContextContract) => {
 Route.group(() => {
   Route.post('/', 'UsersController.create')// CREATE USER ROUTE
   Route.get('/:id', 'UsersController.findUser').middleware('auth')// FIND A USER ROUTE
-  Route.delete('/', 'UsersController.destroy').middleware('auth')// FIND A USER ROUTE
+  Route.delete('/:id', 'UsersController.destroy').middleware('auth')// FIND A USER ROUTE
 }).prefix('users')
 
 Route.group(() => {
@@ -41,7 +41,7 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post('/', 'CoursesController.create')// CREATE A COURSE ROUTE
-  Route.get('/:name', 'CoursesController.findCourse')// FIND A COURSE ROUTE
-  Route.put('/:name', 'CoursesController.update')// FIND A COURSE ROUTE
-  Route.delete('/:name', 'CoursesController.destroy')// DELETE A COURSE ROUTE
+  Route.get('/:id', 'CoursesController.findCourse')// FIND A COURSE ROUTE
+  Route.put('/:id', 'CoursesController.update')// FIND A COURSE ROUTE
+  Route.delete('/:id', 'CoursesController.destroy')// DELETE A COURSE ROUTE
 }).prefix('courses').middleware('auth')

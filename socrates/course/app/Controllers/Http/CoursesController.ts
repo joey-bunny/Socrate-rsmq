@@ -41,11 +41,11 @@ export default class CoursesController {
    */
   public async findCourse({ response, params }: HttpContextContract) {
     // Request required data
-    const name = params.name.replace(/%20/g, ' ');
+    const id = params.id
 
     try {
       // Find user in database
-      const findCourse = await Course.findBy("name", name);
+      const findCourse = await Course.findBy("id", id);
 
       // Return error reponse if user is not found
       if (!findCourse) return response.status(400).send({
@@ -73,12 +73,12 @@ export default class CoursesController {
    */
   public async update({ request, response, params }: HttpContextContract) {
     // Request required data
-    const name = params.name.replace(/%20/g, ' ');
-    const { userId, newName, newDescription } = request.body();
+    const id = params.id
+    const { userId, newName, newDescription, userRole } = request.body();
 
     try {
       // Find user in database
-      const findCourse = await Course.findBy("name", name);
+      const findCourse = await Course.findBy("id", id);
 
       // Return error reponse if user is not found
       if (!findCourse) return response.status(400).send({
@@ -87,10 +87,10 @@ export default class CoursesController {
       });
 
       // Return error reponse if user is not the course creator
-      if (findCourse.userId != userId)
+      if (findCourse.userId != userId && userRole != 'admin')
         return response.status(403).send({
           statusCode: 403,
-          message: "Unauthorized to update course"
+          message: "Only the course creator and admin are allowed to update course"
         });
 
       // Validate input
@@ -156,12 +156,12 @@ export default class CoursesController {
    */
   public async destroy({ request, response, params }: HttpContextContract) {
     // Request required data
-    const name = params.name.replace(/%20/g, ' ');
-    const { userId } = request.body();
+    const id = params.id
+    const { userId, userRole } = request.body();
 
     try {
       // Find user in database
-      const findCourse = await Course.findBy("name", name);
+      const findCourse = await Course.findBy("id", id);
 
       // Return error reponse if user is not found
       if (!findCourse) return response.status(400).send({ 
@@ -170,10 +170,10 @@ export default class CoursesController {
       });
 
       // Return error reponse if user is not the course creator
-      if (findCourse.userId !== userId)
+      if (findCourse.userId !== userId && userRole != 'admin')
         return response.status(403).send({
           statusCode: 403,
-          message: "Unauthorized to delete course"
+          message: "Only coure creator and admin are allowed to delete course"
         });
 
       await findCourse.delete();

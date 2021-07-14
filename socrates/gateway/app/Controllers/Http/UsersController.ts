@@ -7,12 +7,12 @@ export default class UsersController {
   **CREATE USER ROUTE
   */
   public async create({request, response}: HttpContextContract) {
-    const { name, email, password, isLecturer } = request.body()
+    const { name, email, password, userRole } = request.body()
     const payload = {
       name: name.toLowerCase(),
       email: email.toLowerCase(),
       password,
-      isLecturer
+      userRole
     }
 
     try {
@@ -55,14 +55,16 @@ export default class UsersController {
   /*
   **DELETE A USER ROUTE
   */
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, params }: HttpContextContract) {
+    const id = params.id
     const user = request.user
-    const userId = user['id']
-    const getUserRoute = `${userServiceRoute}/${userId}`
+    const userRole = user['user_role']
+    const payload = { userRole }
+    const getUserRoute = `${userServiceRoute}/${id}`
 
     try {
       // Send api request to user service to find user using id
-      const call = await  hermes('delete', getUserRoute)
+      const call = await  hermes('delete', getUserRoute, payload)
 
       // Return response
       return response.status(call.status).send(call.data)
