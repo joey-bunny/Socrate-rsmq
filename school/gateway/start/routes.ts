@@ -20,6 +20,15 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+Route.get('/', async ({ response}: HttpContextContract) => {
+  return response.status(200).send({message: 'Welcome'})
+})
+
+Route.get('/courses', async ({ response}: HttpContextContract) => {
+  return response.status(200).send({message: 'Welcome'})
+})//.middleware('auth')
+
 Route.group(() => {
   Route.post('/', 'UsersController.create')// CREATE USER ROUTE
   Route.get('/:id', 'UsersController.findUser').middleware('auth')// FIND A USER ROUTE

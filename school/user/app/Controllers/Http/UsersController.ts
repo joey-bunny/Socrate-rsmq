@@ -25,8 +25,8 @@ export default class UsersController {
       const data = createUser.serialize()
 
       // Return response
-      return response.status(200).send({
-        statusCode: 200,
+      return response.status(201).send({
+        statusCode: 201,
         message: 'User created',
         data: data
       })
