@@ -141,7 +141,10 @@ export default class UsersController {
       await findUser.delete()
 
       // Return response
-      return response.status(200).send({data: 'User deleted'})
+      return response.status(200).send({
+        statusCode: 200,
+        message: 'User deleted'
+      })
 
     } catch (err) {
       // Return error response

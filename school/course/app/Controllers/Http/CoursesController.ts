@@ -87,10 +87,10 @@ export default class CoursesController {
       });
 
       // Return error reponse if user is not the course creator
-      if (findCourse.userId !== userId)
+      if (findCourse.userId != userId)
         return response.status(403).send({
           statusCode: 403,
-          message: "Unauthorized to delete course"
+          message: "Unauthorized to update course"
         });
 
       // Validate input

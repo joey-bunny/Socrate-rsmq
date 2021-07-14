@@ -22,10 +22,11 @@ export default class UsersController {
       return response.status(call.status).send(call.data)
 
     } catch(err) {
+      console.log(err.errno, err.code )
       // Return error response
-      return response.status(err.response.data.statusCode).send({
-        statusCode: err.response.data.statusCode,
-        message: err.response.data.message,
+      return response.status(err?.response?.data?.statusCode || 502 ).send({
+        statusCode: err?.response?.data?.statusCode || 502,
+        message: err?.response?.data?.message || "Bad gateway",
       })
     }
   }
@@ -44,9 +45,9 @@ export default class UsersController {
       return response.status(call.status).send(call.data)
     } catch(err) {
       // Return error response
-      return response.status(err.response.data.statusCode).send({
-        statusCode: err.response.data.statusCode,
-        message: err.response.data.message,
+      return response.status(err?.response?.data?.statusCode || 502 ).send({
+        statusCode: err?.response?.data?.statusCode || 502,
+        message: err?.response?.data?.message || "Bad gateway",
       })
     }
   }
@@ -67,9 +68,9 @@ export default class UsersController {
       return response.status(call.status).send(call.data)
     } catch(err) {
       // Return error response
-      return response.status(err.response.data.statusCode).send({
-        statusCode: err.response.data.statusCode,
-        message: err.response.data.message,
+      return response.status(err?.response?.data?.statusCode || 502 ).send({
+        statusCode: err?.response?.data?.statusCode || 502,
+        message: err?.response?.data?.message || "Bad gateway",
       })
     }
   }

@@ -10,7 +10,7 @@ export default class CoursesController {
   public async create({request, response}: HttpContextContract) {
     const  { name, description } = request.body()
     const user = request.user
-    const userRole = user['isLecturer']
+    const userRole = user['is_lecturer']
     const userId = user['id']
     const payload = lower({name, description, userId})
 
@@ -28,9 +28,9 @@ export default class CoursesController {
 
     } catch(err) {
       // Return error response
-      return response.status(err.response.data.statusCode).send({
-        statusCode: err.response.data.statusCode,
-        message: err.response.data.message
+      return response.status(err?.response?.data?.statusCode || 502 ).send({
+        statusCode: err?.response?.data?.statusCode || 502,
+        message: err?.response?.data?.message || "Bad gateway",
       })
     }
   }
@@ -52,9 +52,9 @@ export default class CoursesController {
 
     } catch(err) {
       // Return error response
-      return response.status(err.response.data.statusCode).send({
-        statusCode: err.response.data.statusCode,
-        message: err.response.data.message
+      return response.status(err?.response?.data?.statusCode || 502 ).send({
+        statusCode: err?.response?.data?.statusCode || 502,
+        message: err?.response?.data?.message || "Bad gateway",
       })
     }
   }
@@ -64,8 +64,11 @@ export default class CoursesController {
   */
   public async update({request, response, params}: HttpContextContract) {
     // Return required data
+    const user = request.user
+    const userId = user['id']
     const name = params.name
-    const payload = lower(request.body())
+    const { newName, newDescription } = request.body()
+    const payload = lower({newName, newDescription, userId})
     const getCourseRoute = `${courseServiceRoute}/${name}`
 
     try {
@@ -77,9 +80,9 @@ export default class CoursesController {
 
     } catch(err) {
       // Return error response
-      return response.status(err.response.data.statusCode).send({
-        statusCode: err.response.data.statusCode,
-        message: err.response.data.message,
+      return response.status(err?.response?.data?.statusCode || 502 ).send({
+        statusCode: err?.response?.data?.statusCode || 502,
+        message: err?.response?.data?.message || "Bad gateway",
       })
     }
   }
