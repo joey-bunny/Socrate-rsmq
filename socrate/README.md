@@ -7,14 +7,18 @@ This application allows you to register, login, perform CRUD actions on courses,
 2. Create a .env file in the root directory, copy the content of the .env.example file into the .env file, and update the following options with your credentials
 	* MYSQL_USER
 	* MYSQL_PASSWORD
-3. Run ```node ace serve``` to start the service
+3. Create a mysql database using the MYSQL_DB_NAME stated in the .env file
+4. Run ```node ace migration:run``` to migrate the database
+5. Run ```node ace serve``` to start the service
 
 ### Setup and start the course service
 1. Enter the course folder in the application root folder and run ```npm install```.
 2. Create a .env file in the root directory, copy the content of the .env.example file into the .env file, and update the following options with your credentials
 	* MYSQL_USER
 	* MYSQL_PASSWORD
-3. Run ```node ace serve``` to start the service
+3. Create a mysql database using the MYSQL_DB_NAME stated in the .env file
+4. Run ```node ace migration:run``` to migrate the database
+5. Run ```node ace serve``` to start the service
 
 ### Setup and start the gateway service
 1. Enter the course folder in the application root folder and run ```npm install```.
