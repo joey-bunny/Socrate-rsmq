@@ -21,16 +21,19 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-Route.get('/', async ({ response}: HttpContextContract) => {
-  return response.status(200).send({message: 'Welcome'})
-})
+
+// Route.post('/', async ({ response, request }: HttpContextContract) => {
+//   const payload = request.body()
+//   const call: any = await rpcRequest('USER_SERVICE', 'register', payload)
+//   return response.status(call.statusCode).send(call)
+// })
 
 Route.get('/courses', async ({ response}: HttpContextContract) => {
   return response.status(200).send({message: 'Welcome'})
 })//.middleware('auth')
 
 Route.group(() => {
-  Route.post('/', 'UsersController.create')// CREATE USER ROUTE
+  Route.post('/', 'UsersController.create')// CREATE USER ROUTE {{ RPC ENABLED }}
   Route.get('/:id', 'UsersController.findUser').middleware('auth')// FIND A USER ROUTE
   Route.delete('/:id', 'UsersController.destroy').middleware('auth')// FIND A USER ROUTE
 }).prefix('users')

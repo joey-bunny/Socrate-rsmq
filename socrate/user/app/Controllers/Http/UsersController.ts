@@ -1,71 +1,70 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-import RegisterValidator from 'App/Validators/RegisterValidator'
 import Hash from '@ioc:Adonis/Core/Hash'
-
+import validateData from 'App/utils/validator'
 export default class UsersController {
+
   /*
   ** CREATE USER
   */
-  public async create({request, response}: HttpContextContract) {
+  public async createUser(payload) {
     try {
       // Validate input data
-      const validateData = await request.validate(RegisterValidator)
-      
+      const validate = await validateData(payload)
+
       // Store user data
-      const createUser = await User.create(validateData)
+      const createUser = await User.create(validate)
 
       // Return error reponse if user creation failed
-      if(!createUser) return response.status(400).send({
-        statusCode: 400,
-        message: 'Unable to create user'
-      })
+      if(!createUser) return {
+        "statusCode": 400,
+        "message": "Unable to create user"
+      }
 
       // Strip response of any sensitive data
       const data = createUser.serialize()
 
       // Return response
-      return response.status(201).send({
+      return {
         statusCode: 201,
         message: 'User created',
         data: data
-      })
+      }
 
     } catch (err) {
       // Return error response
-      return response.status(400).send({
+      return {
         statusCode: 400,
         message: err.messages
-      })
+      }
     }
   }
 
   /*
   ** FIND A USER
   */
-  public async findUser({response, params }: HttpContextContract) {
+  public async findUser(payload) {
     // Request required data
-    const userId = params.id
+    const userId = payload
 
     try {
       // Find user in database
       const findUser = await User.findBy('id', userId)
 
       // Return error reponse if user is not found
-      if(!findUser) return response.status(400).send({
+      if(!findUser) return {
         statusCode: 400,
         message: 'User not found'
-      })
+      }
 
       // Strip response of any sensitive data
       const data = findUser.serialize()
 
       // Return response
-      return response.status(200).send({
+      return {
         statusCode: 200,
         message: 'User found',
         data: data
-      })
+      }
     } catch (err) {
       // Return error response
       return err
@@ -75,9 +74,9 @@ export default class UsersController {
   /*
   ** VERIFY A USER
   */
-  public async verifyUser({response, request }: HttpContextContract) {
+  public async verifyUser(payload) {
     // Request required data
-    const { email, password } = request.body()
+    const { email, password } = payload
     const pass = password
 
     try {
@@ -85,73 +84,73 @@ export default class UsersController {
       const findUser = await User.findBy('email', email)
 
       // Return error reponse if user is not found
-      if(!findUser) return response.status(400).send({statusCode: 400,message: 'Invalid credentials'})
+      if(!findUser) return {statusCode: 400,message: 'Invalid credentials'}
 
       // Verify password
       const passwordMatch = await Hash.verify(findUser.password, pass)
 
       // Return error if password does not match
-      if(!passwordMatch || passwordMatch != true)  return response.status(400).send({
+      if(!passwordMatch || passwordMatch != true)  return {
         statusCode: 400,
         message: 'Invalid credentials'
-      })
+      }
 
       const data = findUser.serialize()
 
-      
       // Return response
-      return response.status(200).send({
+      return {
         statusCode: 200,
         message: 'User found and verified',
         data: data
-      })
+      }
     } catch (err) {
       // Return error response
-      return response.status(500).send({
+      return {
         statusCode: 500,
         message: "Internal server Error",
-      });
+      }
     }
   }
 
   /*
   ** DELETE A USER
   */
-  public async destroy({request, response, params }: HttpContextContract) {
+  public async destroy(payload) {
     // Request required data
-    const id = params.id
-    const { userRole } = request.body()
+    const id = payload
 
     try {
       // Find user in database
       const findUser = await User.findBy('id', id)
 
       // Return error reponse if user is not found
-      if(!findUser) return response.status(400).send({
+      if(!findUser) return {
         statusCode: 400,
         message: 'User not found'
-      })
+      }
 
-      if (userRole != 'admin') return response.status(403).send({
+      const userRole = findUser.userRole
+
+      if (userRole != 'admin') return {
         statusCode: 403,
         message: 'Only admins are authorized to delete user'
-      })
+      }
 
       // Delete user
       await findUser.delete()
 
       // Return response
-      return response.status(200).send({
+      return {
         statusCode: 200,
         message: 'User deleted'
-      })
+      }
 
     } catch (err) {
       // Return error response
-      return response.status(500).send({
+      return {
         statusCode: 500,
         message: "Internal server Error",
-      });
+      }
     }
   }
 }

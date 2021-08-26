@@ -1,7 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { hermes } from 'App/util/functions'
+import { rpcRequest } from 'rabbitmq-micro-service-framework'
 
-const authLoginRoute = process.env.lOGIN_ROUTE
 
 export default class AuthController {
   public async login ({request, response}: HttpContextContract) {
@@ -10,11 +9,11 @@ export default class AuthController {
     const payload = {email: email.toLowerCase(), password}
 
     try {
-      // Make request to auth service to login user
-      const call = await hermes('post', authLoginRoute, payload)
+      // SEND REQUEST TO QUEUE
+      const call: any = await rpcRequest('AUTH_SERVICE', 'login', payload)
 
-      return response.status(call.status).send(call.data)
-
+      // RETURN RESPONSE
+      return response.status(call.statusCode).send(call)
     } catch (err) {
       // Return error response
       return response.status(err?.response?.data?.statusCode || 502 ).send({

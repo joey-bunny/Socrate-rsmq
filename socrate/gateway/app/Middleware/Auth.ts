@@ -1,7 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { hermes } from 'App/util/functions'
+import { rpcRequest } from 'rabbitmq-micro-service-framework'
 
-const decodeJwtRoute = process.env.DECODE_JWT_ROUTE
 
 export default class Auth {
   public async handle ({ request, response }: HttpContextContract, next: () => Promise<void>) {
@@ -16,24 +15,17 @@ export default class Auth {
       })
 
       // Make request to auth service to decode token
-      const call = await hermes('post', decodeJwtRoute, { token })
-
-      const user = call.data// User data
+      // SEND REQUEST TO QUEUE
+      const call: any = await rpcRequest('AUTH_SERVICE', 'decodeToken', token)
 
       // Return unautorized mesage if no user object is found
-      if ( !user ) return response.status(401).send({
-        statusCode: 401,
-        message: 'Unauthorized'
-      })
-
-      // Return unautorized mesage if no id or email or iat number is found in the user object
-      if ( !user.id || !user.email || !user.iat ) return response.status(401).send({
+      if ( !call.data ) return response.status(401).send({
         statusCode: 401,
         message: 'Unauthorized'
       })
 
       // Set the user in the request object
-      request.user = user
+      request.user = call.data
     
       // Pass to controller
       await next()

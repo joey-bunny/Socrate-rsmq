@@ -14,11 +14,25 @@
   },
   "preloads": [
     "./start/routes",
-    "./start/kernel"
+    "./start/kernel",
+    "./start/redis",
+    {
+      "file": "./start/redis",
+      "environment": [
+        "console"
+      ]
+    },
+    {
+      "file": "./start/rmsf",
+      "environment": [
+        "web"
+      ]
+    }
   ],
   "providers": [
     "./providers/AppProvider",
-    "@adonisjs/core"
+    "@adonisjs/core",
+    "@adonisjs/redis"
   ],
   "aceProviders": [
     "@adonisjs/repl"

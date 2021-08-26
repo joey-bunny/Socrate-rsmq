@@ -1,12 +1,13 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { hermes } from 'App/util/functions'
+import { rpcRequest } from 'rabbitmq-micro-service-framework'
 
-const userServiceRoute = process.env.USER_SERVICE_BASE_URL
 export default class UsersController {
   /*
   **CREATE USER ROUTE
   */
   public async create({request, response}: HttpContextContract) {
+    request.setTimeout = setTimeout(()=> {}, 5000)
+    
     const { name, email, password, userRole } = request.body()
     const payload = {
       name: name.toLowerCase(),
@@ -16,13 +17,12 @@ export default class UsersController {
     }
 
     try {
-      // Send api request to user service to create user
-      const call = await  hermes('post', userServiceRoute, payload)
+      // SEND REQUEST TO QUEUE
+      const call: any = await rpcRequest('USER_SERVICE', 'register', payload)
 
-      return response.status(call.status).send(call.data)
-
+      // RETURN RESPONSE
+      return response.status(call.statusCode).send(call)
     } catch(err) {
-      console.log(err.errno, err.code )
       // Return error response
       return response.status(err?.response?.data?.statusCode || 502 ).send({
         statusCode: err?.response?.data?.statusCode || 502,
@@ -36,13 +36,13 @@ export default class UsersController {
   */
   public async findUser({ response, params}: HttpContextContract) {
     const id = params.id
-    const getUserRoute = `${userServiceRoute}/${id}`
 
     try {
-      // Send api request to user service to find user using id
-      const call = await  hermes('get', getUserRoute)
+      // SEND REQUEST TO QUEUE
+      const call: any = await rpcRequest('USER_SERVICE', 'findUser', id)
 
-      return response.status(call.status).send(call.data)
+      // RETURN RESPONSE
+      return response.status(call.statusCode).send(call)
     } catch(err) {
       // Return error response
       return response.status(err?.response?.data?.statusCode || 502 ).send({
@@ -55,19 +55,15 @@ export default class UsersController {
   /*
   **DELETE A USER ROUTE
   */
-  public async destroy({ request, response, params }: HttpContextContract) {
+  public async destroy({ response, params }: HttpContextContract) {
     const id = params.id
-    const user = request.user
-    const userRole = user['user_role']
-    const payload = { userRole }
-    const getUserRoute = `${userServiceRoute}/${id}`
 
     try {
-      // Send api request to user service to find user using id
-      const call = await  hermes('delete', getUserRoute, payload)
+      // SEND REQUEST TO QUEUE
+      const call: any = await rpcRequest('USER_SERVICE', 'deleteUser', id)
 
-      // Return response
-      return response.status(call.status).send(call.data)
+      // RETURN RESPONSE
+      return response.status(call.statusCode).send(call)
     } catch(err) {
       // Return error response
       return response.status(err?.response?.data?.statusCode || 502 ).send({

@@ -1,25 +1,24 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import jwt from 'jsonwebtoken'
-import { hermes } from 'App/util/functions'
+import { rpcRequest } from 'rabbitmq-micro-service-framework'
 
 const privateKey = process.env.PRIVATE_KEY
 
 export default class AuthController {
-  public async login({ request, response}: HttpContextContract) {
+  public async login(payload) {
     // Request required data
-    const verifyUserRoute = process.env.USER_VERIFICATION
-    const { email, password } = request.body()
-    const payload = {email, password}
+    const { email, password } = payload
 
     // Validate input
-    if(!email || email === null) return response.send({message: 'Email required'})
-    if(!password || password === null) return response.send({message: 'Password required'})
+    if(!email || email === null) return {message: 'Email required'}
+    if(!password || password === null) return {message: 'Password required'}
 
     try {
-      // Send request to user service to confirm user data
-      const call = await hermes('post', verifyUserRoute, payload)
+      // SEND REQUEST TO QUEUE
+      const call: any = await rpcRequest('USER_SERVICE', 'verifyUser', payload)
 
-      const user = call.data.data
+      if (!call.data || call.statusCode == 400) return call
+      // RETURN RESPONSE
+      const user = call.data
 
       // Create and sign token
       const token = jwt.sign(user, privateKey, {
@@ -27,36 +26,40 @@ export default class AuthController {
       });
 
       // Return response
-      return response.status(call.status).send({
+      return {
         statusCode: 200,
         message: 'Login succesful',
         data: token,
-      })
+      }
 
     } catch (err) {
       // Return error response
-      return response.status(err.response.data.statusCode).send({
+      return {
         statusCode: err.response.data.statusCode,
         message: err.response.data.message,
-      })
+      }
     }
   }
 
-  public async decodeToken ({ request, response }: HttpContextContract) {
+  public async decodeToken (payload) {
     try {
       // Request required data
-      const { token } = request.body()
+      const token = payload
 
       // Decode token
       const decode = jwt.verify(token, privateKey)
 
       // Return error response if token is invalid
-      if(!decode) return response.status(401).send({
+      if(!decode) return {
         statusCode: 401,
         send: 'Invalid token'
-      })
+      }
 
-      return decode
+      return {
+        statusCode: 400,
+        message: 'Token decoded successfully',
+        data: decode
+      }
     } catch (err) {
       console.log(err.message)
       return err
